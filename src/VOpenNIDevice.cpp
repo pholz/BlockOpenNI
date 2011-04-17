@@ -530,7 +530,7 @@ namespace V
 		//
 		// In case the config file has no user node, we create one if so we want to
 		//
-		if( _isUserOn && allocUserIfNoNode )
+		if( !_isUserOn && allocUserIfNoNode )
 		{
 			//_userGen = new UserGenerator();
 			_sceneMetaData = new xn::SceneMetaData();
