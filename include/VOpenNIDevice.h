@@ -106,6 +106,8 @@ namespace V
 
 		bool isOneTimeCalibration()					{ return _isOneTimeCalibration;	}
 		void enableOneTimeCalibration( bool value )	{ _isOneTimeCalibration = value;	}
+		void enableFileCalibration( bool value )	{ _isFileCalibration = value;	}
+		bool isFileCalibration()					{ return _isFileCalibration; }
 
 		// Set calibration state. true/false
 		void setCalibrationState( bool value )		{ _isFirstCalibrationComplete = value;	}
@@ -220,6 +222,7 @@ namespace V
 		// User Calibrations
 		bool					_isOneTimeCalibration;
 		bool					_isFirstCalibrationComplete;
+		bool					_isFileCalibration;
 
 		xn::Generator*			_primaryGen;
 		xn::DepthGenerator		_depthGen;

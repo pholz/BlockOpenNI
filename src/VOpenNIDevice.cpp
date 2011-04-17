@@ -5,6 +5,8 @@
 #include "VOpenNIUser.h"
 #include "VOpenNIDevice.h"
 
+#define XN_CALIBRATION_FILE_NAME "UserCalibration.bin"
+
 
 // Include library
 #pragma comment( lib, "openni.lib" )
@@ -51,7 +53,28 @@ namespace V
 			// TODO! Enable slot change. For now only slot 0 is used
 			int slot = 0;
 
-			if( device->isOneTimeCalibration() && device->_isFirstCalibrationComplete )
+			if( device->isFileCalibration())
+			{
+				XnStatus rc = device->getUserGenerator()->GetSkeletonCap().LoadCalibrationDataFromFile(nId, XN_CALIBRATION_FILE_NAME);
+				
+				if( rc == XN_STATUS_OK)
+				{
+					device->getUserGenerator()->GetPoseDetectionCap().StopPoseDetection(nId);
+					device->getUserGenerator()->GetSkeletonCap().StartTracking( nId );
+					
+					std::stringstream ss2;
+					ss2 << "Loaded Calibration Data: '" << XN_CALIBRATION_FILE_NAME << "'  ID: " << nId << std::endl;
+					DEBUG_MESSAGE( ss2.str().c_str() );
+				} 
+				else 
+				{
+					std::stringstream ss2;
+					ss2 << "No Calibration File found. Start Pose Detection For User: '" << nId << "'  Slot: " << slot << std::endl;
+					DEBUG_MESSAGE( ss2.str().c_str() );
+					generator.GetPoseDetectionCap().StartPoseDetection( g_strPose, nId );
+				}
+			}
+			else if( device->isOneTimeCalibration() && device->_isFirstCalibrationComplete )
 			{
 				// Load Data For Each User
 				if( device->getUserGenerator()->GetSkeletonCap().IsCalibrationData(slot) )
@@ -207,6 +230,13 @@ namespace V
 			// TODO! We should be able to choose a slot
 			int slot = 0;
 
+			if(device->isFileCalibration())
+			{
+				device->getUserGenerator()->GetSkeletonCap().SaveCalibrationDataToFile(nId, XN_CALIBRATION_FILE_NAME);
+				std::stringstream ss2;
+				ss2 << "Saving Calibration Data From User: '" << nId << std::endl;
+				DEBUG_MESSAGE( ss2.str().c_str() );
+			}
 			if( !device->getUserGenerator()->GetSkeletonCap().IsCalibrationData(slot) &&
 				device->isOneTimeCalibration() )
 			{
